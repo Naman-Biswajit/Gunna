@@ -1,4 +1,11 @@
 title [first second third word]
+author [Naman Biswajit]
 
+section [Introduction]
 Hello my name is Naman
+
+subsection [about]
 I like to code
+
+subsection [more about]
+And do Mathematics

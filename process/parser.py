@@ -1,4 +1,4 @@
-from .tokens import parameters, init, keywords
+from .tokens import parameters, init, Tokens
 
 
 class Parser:
@@ -6,7 +6,9 @@ class Parser:
         self.gn = file.read().split('\n')
         self.name = path.replace('.gn', '')
         self.param = parameters
-        self.body = ''
+        self.tokens = Tokens()
+        self.body = str()
+        self.head = str()
         self.init()
         self.parse_body()
         self.dump()
@@ -19,41 +21,47 @@ class Parser:
         with open(f'./{self.name}.tex', 'w+') as file:
             file.write(self.tex)
 
-    def command(self, arg, tag: list):
-        print(arg)
+    def command(self, arg, func: list):
+        self.head += f'\\{func[0]}{{{arg}}}\n'
 
-    def parse_body(self, arg=str(), tag=[], is_arg=False):
+        match func[0]:
+            case 'title':
+                self.body = '\\makehead\n' + self.body
 
-        for line in self.gn:
-            words = line.split(' ')
-            insc = list(set(keywords).intersection(words))
+    def read(self, line, arg=str(), func=[], is_arg=False):
+        words = line.split(' ')
+        insc = list(self.tokens.functions.intersection(words))
 
-            for word in words:
-                # check for ignoring symbol
-                if is_arg:
-                    if word.endswith(']'):
-                        arg += word[:-1] + ' '
-                        is_arg = False
-                        self.command(arg, tag)
-                        arg = str()
-                        tag.clear()
-
-                    else:
-                        arg += word + ' '
-
-                    continue
-
-                if word in insc:
-                    i = words.index(word)
-                    words.remove(word)
-                    tag.extend((word, i, self.gn.index(line)))
-
-                    if (word := words[i]).startswith('['):
-                        is_arg = True
-                        word = word.replace('[', '')
-                        arg += word + ' '
+        for word in words:
+            word = self.tokens.tinsert[word] if word in self.tokens.tags else word
+            if is_arg:
+                if word.endswith(']'):
+                    arg += word[:-1] + ' '
+                    is_arg = False
+                    self.command(arg, func)
+                    arg = str()
+                    func.clear()
 
                 else:
-                    self.body += word + ' '
+                    arg += word + ' '
+
+            elif word in insc:
+                i = words.index(word)
+                words.remove(word)
+                func.extend((word, i, self.gn.index(line)))
+
+                if (word := words[i]).startswith('['):
+                    is_arg = True
+                    word = word.replace('[', '')
+                    arg += word + ' '
+
+            else:
+                self.body += word + ' '
+
+    def parse_body(self):
+        for line in self.gn:
+            self.read(line)
+            self.body += '\n'
 
         self.param['body'] = self.body
+        self.param['head'] = self.head

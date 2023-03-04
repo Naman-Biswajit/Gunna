@@ -8,9 +8,7 @@ init = (
 \\usepackage[colorlinks=true, allcolors=blue]{{hyperref}}
 {}
 \\begin{{document}}
-
 {}
-
 \\end{{document}}
 {}
 ''')
@@ -18,7 +16,17 @@ init = (
 
 @dataclass
 class Tokens:
-    title = '\\title\{{0}\}'
+    functions = {'title', 'author', 'section', 'subsection'}
+    tags = {'appendix:', 'table-content:'}
+    tinsert = {
+        'appendix:': '\\appendix',
+        'table-content:': '\\tableofcontents',
+        'table-of-content:': '\\tableofcontents',
+    }
+
+    finsert = {
+        'title'
+    }
 
 
 parameters = {
@@ -32,5 +40,3 @@ parameters = {
     'body': 'Body not found',
     'bibliography':  ''
 }
-
-keywords = ['title', 'author', 'section', 'subsection']
