@@ -8,7 +8,9 @@ init = (
 \\usepackage[colorlinks=true, allcolors=blue]{{hyperref}}
 {}
 \\begin{{document}}
+
 {}
+
 \\end{{document}}
 {}
 ''')
@@ -19,14 +21,16 @@ class Tokens:
     title = '\\title\{{0}\}'
 
 
-@dataclass
-class Parameters:
-    lang: str = 'english'
-    top: str = '2cm'
-    bottom: str = '2cm'
-    left: str = '3cm'
-    right: str = '3cm'
-    marginparwidth: str = '1.75cm'
-    packages: str = ''
-    body: str = 'Body not found'
-    bibliography: str = ''
+parameters = {
+    'lang': 'english',
+    'top': '2cm',
+    'bottom':  '2cm',
+    'left': '3cm',
+    'right': '3cm',
+    'marginparwidth': '1.75cm',
+    'head': '',
+    'body': 'Body not found',
+    'bibliography':  ''
+}
+
+keywords = ['title', 'author', 'section', 'subsection']
