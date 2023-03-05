@@ -4,7 +4,6 @@ init = (
 '''
 \\documentclass{{article}}
 \\usepackage[{}]{{babel}}
-\\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{{geometry}}
 {}
 \\begin{{document}}
 {}
@@ -13,6 +12,13 @@ init = (
 '''
 )
 
+block = (
+'''
+\\begin{{{0}}}
+{1}
+\\end{{{0}}}
+'''
+)
 
 @dataclass
 class Tokens:
@@ -23,15 +29,19 @@ class Tokens:
         'section': 'body',
         'subsection': 'body',
         'href' : 'body',
+        'includegraphics' : 'body',
     }
 
-    diarg = ['link']
+    diarg = ['href']
 
     requires = {
-        'href' : ['head', '\\usepackage[colorlinks=true, allcolors=blue]{{hyperref}}\n'],
-        'title' : ['body', '\\maketitle\n'],
+        'href' : ['head', '\\usepackage[colorlinks=true, allcolors=blue]{{hyperref}}'],
+        'title' : ['body', '\\maketitle'],
+        'includegraphics' : ['head', '\\usepackage{{graphicx}}'],
     }
     
+    block_func = {'includegraphics'}
+
     tags = {'appendix:', 'table-content:'}
     
     tinsert = {
@@ -41,7 +51,8 @@ class Tokens:
     }
 
     func_aliases = {
-        'link' : 'href'
+        'link' : 'href',
+        'img' : 'includegraphics'
     }
 
 parameters = {
