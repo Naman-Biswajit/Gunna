@@ -1,0 +1,12 @@
+title [An example on latex compilation]
+author [Naman Biswajit]
+date [5 March, 2023]
+
+section [Introduction]
+This example aims to test the functionality of Gunna Parser
+
+subsection [about]
+This is to test the subsection...
+
+subsection [future]
+I will be adding more stuff

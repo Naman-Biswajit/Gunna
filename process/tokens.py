@@ -16,16 +16,19 @@ init = (
 
 @dataclass
 class Tokens:
-    functions = {'title', 'author', 'section', 'subsection'}
+    functions = {
+        'title': 'head',
+        'author': 'head',
+        'date' : 'head',
+        'section': 'body',
+        'subsection': 'body',
+    }
+
     tags = {'appendix:', 'table-content:'}
     tinsert = {
         'appendix:': '\\appendix',
         'table-content:': '\\tableofcontents',
         'table-of-content:': '\\tableofcontents',
-    }
-
-    finsert = {
-        'title'
     }
 
 

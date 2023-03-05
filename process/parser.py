@@ -22,21 +22,26 @@ class Parser:
             file.write(self.tex)
 
     def command(self, arg, func: list):
-        self.head += f'\\{func[0]}{{{arg}}}\n'
+        insert = f'\\{func[0]}{{{arg}}}'.strip() + '\n'
+        if self.tokens.functions[func[0]] == 'head':
+            self.head += insert
+        else:
+            self.body += insert
 
         match func[0]:
             case 'title':
                 self.body = '\\makehead\n' + self.body
-
+    
     def read(self, line, arg=str(), func=[], is_arg=False):
         words = line.split(' ')
-        insc = list(self.tokens.functions.intersection(words))
-
+        insc = list(set(self.tokens.functions.keys()).intersection(words))
         for word in words:
+            i = words.index(word)
             word = self.tokens.tinsert[word] if word in self.tokens.tags else word
             if is_arg:
                 if word.endswith(']'):
-                    arg += word[:-1] + ' '
+                    word = word.replace(']', '')
+                    arg += word + (' ' if len(words)-1 == i else '')
                     is_arg = False
                     self.command(arg, func)
                     arg = str()
@@ -46,13 +51,17 @@ class Parser:
                     arg += word + ' '
 
             elif word in insc:
-                i = words.index(word)
                 words.remove(word)
                 func.extend((word, i, self.gn.index(line)))
 
                 if (word := words[i]).startswith('['):
                     is_arg = True
                     word = word.replace('[', '')
+                    
+                    if word.endswith(']'):
+                        word = word.replace(']', '')
+                        words.insert(i+1, ']')
+                    
                     arg += word + ' '
 
             else:
@@ -63,5 +72,5 @@ class Parser:
             self.read(line)
             self.body += '\n'
 
-        self.param['body'] = self.body
         self.param['head'] = self.head
+        self.param['body'] = self.body
