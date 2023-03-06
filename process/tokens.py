@@ -30,6 +30,7 @@ class Tokens:
         'subsection': 'body',
         'href' : 'body',
         'includegraphics' : 'body',
+        'itemizer' : 'body',
     }
 
     diarg = ['href']
@@ -40,19 +41,21 @@ class Tokens:
         'includegraphics' : ['head', '\\usepackage{{graphicx}}'],
     }
     
-    block_func = {'includegraphics'}
+    block_func = {'includegraphics', 'itemizer'}
 
-    tags = {'appendix:', 'table-content:'}
+    tags = {'appendix:', 'table-content:', 'center'}
     
     tinsert = {
         'appendix:': '\\appendix',
         'table-content:': '\\tableofcontents',
         'table-of-content:': '\\tableofcontents',
+        'center' : '\\centering'
     }
 
     func_aliases = {
         'link' : 'href',
-        'img' : 'includegraphics'
+        'img' : 'includegraphics',
+        'list' : 'itemizer'
     }
 
 parameters = {

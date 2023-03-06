@@ -7,11 +7,11 @@ class Interpreter:
         self.name = path.replace('.gn', '')
         self.param = parameters
         self.tokens = Tokens()
-        self.body = ''
-        self.head = ''
         self.interpret()
-
+    
     def interpret(self):
+        self.insert_tag = lambda tag: self.tokens.tinsert[tag]+'\n' if tag in self.tokens.tags else tag
+        self.body, self.head = '', ''
         self.tex = f'{init[1:-1]}'
         self.parse()
         self.tex = self.tex.format(*self.param.values())
@@ -23,26 +23,34 @@ class Interpreter:
         insert = f'\\{func}{optional}{{{arg}}}'
         insert += f'{{{txt.strip(" ")}}}' if txt is not None else ''
         return insert
-
+    
     def block_func(self, func, args):
+        arrow_func = lambda args: args.split('->') if ' ->' in args else ('', args,) 
+
         if func not in self.tokens.block_func:
             return False
 
+        tag, args = arrow_func(args)
+        tag = tag.strip(' ')
         match func:
             case 'includegraphics':
                 args = args.split(',')
                 path = args[0]
+                
                 if len(args) > 1:
-                    caption = f'\\caption{{{args[1]}}}'
+                    caption = f'\\caption{{{args[1].strip(" ")}}}' if args[1] != '' else ''
                     del args[0:2]
                     optional = ', '.join(args)
-                else:
-                    arg, optional = '', ''
                 
                 content = self.stand_func(func, path, optional=f'[{optional.strip(" ")}]')
-                content += f'\n{caption}'
-                self.body += block.format('figure', content)
+                content += f'\n{caption}\n{self.insert_tag(tag)}'
+                select = 'figure'
 
+            case 'itemizer':
+                content = (r:='\n\\item ')+ r.join(args.split(','))
+                select = tag
+
+        self.body += block.format(select, content)
         return True
 
     def process_func(self, arg, func, txt=None):
@@ -75,7 +83,7 @@ class Interpreter:
 
         for word in words:
             i = words.index(word)
-            word = self.tokens.tinsert[word] if word in self.tokens.tags else word
+            word = self.insert_tag(word)
             def aspace(): return word + (' ' if len(words)-1 != i else '')
             if is_arg:
                 if word.endswith(']'):
