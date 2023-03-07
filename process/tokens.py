@@ -52,11 +52,19 @@ class Tokens:
         'center' : '\\centering'
     }
 
+    tarrow = {
+        'number' : 'enumerate',
+        'bullet' : 'itemize',
+    }
+    
     func_aliases = {
         'link' : 'href',
         'img' : 'includegraphics',
         'list' : 'itemizer'
     }
+    
+    s_wrap = ['(', '[', '{', '*', '**', '_']
+
 
 parameters = {
     'lang': 'english',

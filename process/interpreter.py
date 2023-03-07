@@ -48,7 +48,7 @@ class Interpreter:
 
             case 'itemizer':
                 content = (r:='\n\\item ')+ r.join(args.split(','))
-                select = tag
+                select = t[tag] if tag in (t:= self.tokens.tarrow) else tag
 
         self.body += block.format(select, content)
         return True
@@ -84,7 +84,7 @@ class Interpreter:
         for word in words:
             i = words.index(word)
             word = self.insert_tag(word)
-            def aspace(): return word + (' ' if len(words)-1 != i else '')
+            aspace = lambda: word + (' ' if len(words)-1 != i else '')
             if is_arg:
                 if word.endswith(']'):
                     word = word[:-1]
@@ -115,7 +115,14 @@ class Interpreter:
 
     def parse(self):
         for line in self.gn:
-            self.read(line)
+            if line.startswith('\\'):
+                if line[1] == '!':
+                    line.replace('!', '', 1)
+                    self.read(line)
+                
+                else:
+                    self.body += line
+            
             self.body += '\n'
 
         self.param['head'] = self.head
